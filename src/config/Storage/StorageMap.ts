@@ -1,5 +1,5 @@
-import type { Categoria } from "../../types/categoria.type";
+import type { TCategoria } from "../../types/categoria.type";
 
 export type StorageMap = {
-  CategoriaStorage: Categoria[];
+  CategoriaStorage: TCategoria[];
 };

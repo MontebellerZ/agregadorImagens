@@ -1,16 +1,18 @@
-import { Button } from "react-bootstrap";
 import styles from "./styles.module.scss";
 import CategoriaStorage from "../../../config/Storage/Stores/Categoria.store";
+import LinkCategoria from "../../LinkCategoria";
 
 function Home() {
   const categorias = CategoriaStorage.get() || [];
 
   return (
     <div className={styles.home}>
-      <Button variant="secondary">Ver tudo</Button>
-      {categorias?.map((c) => (
-        <div key={c.nome}></div>
-      ))}
+      <div className={styles.buttons}>
+        <LinkCategoria />
+        {categorias?.map((c) => (
+          <LinkCategoria key={c.nome} categoria={c} />
+        ))}
+      </div>
     </div>
   );
 }

@@ -9,6 +9,31 @@ body,
   font-family: monospace;
 }
 
+body {
+  --sb-track-color: #1f1f22;
+  --sb-thumb-color: #746baf;
+  --sb-size: 8px;
+  --sb-radius: 3px;
+
+  ::-webkit-scrollbar {
+    width: var(--sb-size);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--sb-track-color);
+    border-radius: var(--sb-radius);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-color);
+    border-radius: var(--sb-radius);
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+  }
+}
+
 #root {
   color: #e4e4f1;
   background-color: #1f1f22;

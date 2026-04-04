@@ -5,5 +5,12 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 1em;
+
+  .buttons {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1em;
+  }
 }

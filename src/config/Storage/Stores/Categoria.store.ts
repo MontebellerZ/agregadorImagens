@@ -1,4 +1,4 @@
-import type { Categoria } from "../../../types/categoria.type";
+import type { TCategoria } from "../../../types/categoria.type";
 import BaseStorage from "./Base.store";
 
 export default class CategoriaStorage extends BaseStorage {
@@ -6,7 +6,7 @@ export default class CategoriaStorage extends BaseStorage {
     return this.localGet();
   }
 
-  static save(categorias: Categoria[]) {
+  static save(categorias: TCategoria[]) {
     return this.localSave(categorias);
   }
 
@@ -15,7 +15,7 @@ export default class CategoriaStorage extends BaseStorage {
     return categorias?.find((c) => c.nome === nome);
   }
 
-  static saveByNome(categoria: Categoria) {
+  static saveByNome(categoria: TCategoria) {
     const categorias = this.get() || [];
 
     const id = categorias.findIndex((c) => c.nome === categoria.nome);

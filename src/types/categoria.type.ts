@@ -1,6 +1,6 @@
-import type { Foto } from "./foto.type";
+import type { TFoto } from "./foto.type";
 
-export type Categoria = {
+export type TCategoria = {
   nome: string;
-  fotos: Foto[];
+  fotos: TFoto[];
 };
