@@ -1,0 +1,14 @@
+.galeria {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1em;
+
+  .foto {
+    flex: 1;
+    max-height: 300px;
+    border-radius: 1em;
+    object-fit: contain;
+    border: 1px solid #fff4;
+  }
+}
