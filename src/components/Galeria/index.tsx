@@ -1,54 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TFoto } from "../../types/foto.type";
 import styles from "./styles.module.scss";
+import loadFotos from "../../utils/loadFotos";
+import calcRowFotos from "../../utils/calcRowFotos";
+import Foto from "./Foto";
 
+const GALLERY_GAP = 7;
 const LIMIT_STEP = 50;
+const DESIRED_HEIGHT = 240;
 
 interface IGaleria {
   fotos: TFoto[];
 }
 
 function Galeria(props: IGaleria) {
+  const containerRef = useRef(null);
+
+  const [containerWidth, setContainerWidth] = useState(0);
   const [limit, setLimit] = useState(LIMIT_STEP);
   const [loaded, setLoaded] = useState<TFoto[]>([]);
 
   useEffect(() => {
-    const newFotos = props.fotos.slice(limit - LIMIT_STEP, LIMIT_STEP);
+    loadFotos(props.fotos, limit)
+      .then((fotos) => calcRowFotos(fotos, DESIRED_HEIGHT, containerWidth, GALLERY_GAP))
+      .then(setLoaded);
+  }, [limit, props.fotos, containerWidth]);
 
-    const loads = newFotos.map(async (f) => {
-      const data = await f.data();
-      const src = data.default;
-      const img = new Image();
+  useEffect(() => {
+    if (!containerRef.current) return;
 
-      return await new Promise<TFoto>((res) => {
-        img.onload = () => {
-          f.loaded = {
-            src: img.src,
-            width: img.width,
-            height: img.height,
-            aspect: img.width / img.height,
-          };
-          res(f);
-        };
-        img.src = src;
-      });
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
     });
 
-    Promise.all(loads).then(setLoaded);
-  }, [limit, props.fotos]);
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   return (
-    <div className={styles.galeria}>
+    <div ref={containerRef} className={styles.galeria} style={{ gap: GALLERY_GAP }}>
       {loaded.map((f) => (
-        <img
+        <Foto
           key={f.arquivo}
           src={f.loaded?.src}
           decoding="sync"
           className={styles.foto}
           style={{
             aspectRatio: f.loaded?.aspect,
-            height: 200,
-            width: undefined,
+            height: f.loaded?.height,
+            borderRadius: GALLERY_GAP,
           }}
         />
       ))}
