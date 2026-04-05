@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { TFoto } from "../../types/foto.type";
 import styles from "./styles.module.scss";
 import loadFotos from "../../utils/loadFotos";
@@ -15,10 +15,13 @@ interface IGaleria {
 
 function Galeria(props: IGaleria) {
   const containerRef = useRef(null);
+  const loadingRef = useRef(null);
 
   const [containerWidth, setContainerWidth] = useState(0);
   const [limit, setLimit] = useState(LIMIT_STEP);
   const [loaded, setLoaded] = useState<TFoto[]>([]);
+
+  const ended = useMemo(() => limit >= props.fotos.length, [limit, props.fotos]);
 
   useEffect(() => {
     loadFotos(props.fotos, limit)
@@ -37,9 +40,26 @@ function Galeria(props: IGaleria) {
 
     resizeObserver.observe(containerRef.current);
 
-    return () => {
-      resizeObserver.disconnect();
-    };
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!loadingRef.current) return;
+
+    const visibleObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setLimit((l) => l + LIMIT_STEP);
+      },
+      {
+        root: null,
+        rootMargin: `0px 0px ${200}px 0px`,
+        threshold: 0,
+      },
+    );
+
+    visibleObserver.observe(loadingRef.current);
+
+    return () => visibleObserver.disconnect();
   }, []);
 
   return (
@@ -57,6 +77,9 @@ function Galeria(props: IGaleria) {
           }}
         />
       ))}
+      <h3 ref={loadingRef} className={styles.loadingText}>
+        {ended ? "Isso é tudo!" : "Carregando..."}
+      </h3>
     </div>
   );
 }
