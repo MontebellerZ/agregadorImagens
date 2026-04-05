@@ -5,7 +5,7 @@ import loadFotos from "../../utils/loadFotos";
 import calcRowFotos from "../../utils/calcRowFotos";
 import Foto from "./Foto";
 
-const GALLERY_GAP = 7;
+const GALLERY_GAP = 6;
 const LIMIT_STEP = 50;
 const DESIRED_HEIGHT = 240;
 
