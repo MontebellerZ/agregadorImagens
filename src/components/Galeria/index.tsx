@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { TFoto } from "../../types/foto.type";
 import styles from "./styles.module.scss";
 import loadFotos from "../../utils/loadFotos";
-import calcRowFotos from "../../utils/calcRowFotos";
+import calcRowFotos from "./calcs/calcRowFotos";
 import Foto from "./Foto";
 
 const GALLERY_GAP = 6;
@@ -28,6 +28,10 @@ function Galeria(props: IGaleria) {
       .then((fotos) => calcRowFotos(fotos, DESIRED_HEIGHT, containerWidth, GALLERY_GAP))
       .then(setLoaded);
   }, [limit, props.fotos, containerWidth]);
+
+  useEffect(() => console.log("loaded", loaded), [loaded]);
+  useEffect(() => console.log("limit", limit), [limit]);
+  useEffect(() => console.log("containerWidth", containerWidth), [containerWidth]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -66,13 +70,13 @@ function Galeria(props: IGaleria) {
     <div ref={containerRef} className={styles.galeria} style={{ gap: GALLERY_GAP }}>
       {loaded.map((f) => (
         <Foto
-          key={f.arquivo}
-          src={f.loaded?.src}
+          key={f.src}
+          src={f.src}
           decoding="sync"
           className={styles.foto}
           style={{
-            aspectRatio: f.loaded?.aspect,
-            height: f.loaded?.height,
+            aspectRatio: f.aspect,
+            height: f.height,
             borderRadius: GALLERY_GAP,
           }}
         />

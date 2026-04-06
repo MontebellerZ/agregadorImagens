@@ -6,21 +6,16 @@ async function loadFotos(fotos: TFoto[], limit: number) {
   const loads = newFotos.map(async (f) => {
     if (f.loaded) return f;
 
-    const data = await f.data();
-    const src = data.default;
-    const img = new Image();
-
     return await new Promise<TFoto>((res) => {
+      const img = new Image();
       img.onload = () => {
-        f.loaded = {
-          src: img.src,
-          width: img.width,
-          height: img.height,
-          aspect: img.width / img.height,
-        };
+        f.width = img.width;
+        f.height = img.height;
+        f.aspect = img.width / img.height;
+        f.loaded = true;
         res(f);
       };
-      img.src = src;
+      img.src = f.src;
     });
   });
 
