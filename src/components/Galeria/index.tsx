@@ -18,20 +18,18 @@ function Galeria(props: IGaleria) {
   const loadingRef = useRef(null);
 
   const [containerWidth, setContainerWidth] = useState(0);
-  const [limit, setLimit] = useState(LIMIT_STEP);
+  const [limit, setLimit] = useState(0);
   const [loaded, setLoaded] = useState<TFoto[]>([]);
 
   const ended = useMemo(() => limit >= props.fotos.length, [limit, props.fotos]);
 
   useEffect(() => {
+    if (containerWidth === 0 || limit === 0) return;
+
     loadFotos(props.fotos, limit)
       .then((fotos) => calcRowFotos(fotos, DESIRED_HEIGHT, containerWidth, GALLERY_GAP))
       .then(setLoaded);
   }, [limit, props.fotos, containerWidth]);
-
-  useEffect(() => console.log("loaded", loaded), [loaded]);
-  useEffect(() => console.log("limit", limit), [limit]);
-  useEffect(() => console.log("containerWidth", containerWidth), [containerWidth]);
 
   useEffect(() => {
     if (!containerRef.current) return;
