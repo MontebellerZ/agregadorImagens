@@ -1,4 +1,4 @@
-import type { TFoto } from "../../../types/foto.type";
+import type { TFoto } from "../../../../types/foto.type";
 import calcAspectWidth from "./calcAspectWidth";
 
 function copyFoto(foto: TFoto, newHeight?: number) {

@@ -5,7 +5,7 @@ import BaseStorage from "./Base.store";
 
 export default class CategoriaStorage extends BaseStorage {
   static get() {
-    return this.localGet() || [];
+    return this.localGet<"CategoriaStorage">() || [];
   }
 
   static save(categorias: TCategoria[]) {

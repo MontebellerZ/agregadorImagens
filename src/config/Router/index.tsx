@@ -3,6 +3,7 @@ import Layout from "../../components/Layout";
 import Home from "../../components/Screens/Home";
 import CategoriaStorage from "../Storage/Stores/Categoria.store";
 import Categorias from "../../components/Screens/Categorias";
+import Lixeira from "../../components/Screens/Lixeira";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
           const cat = params.nome ? decodeURIComponent(params.nome) : undefined;
           return cat ? CategoriaStorage.getByNome(cat) : null;
         },
+      },
+      {
+        path: "lixeira",
+        element: <Lixeira />,
       },
     ],
   },

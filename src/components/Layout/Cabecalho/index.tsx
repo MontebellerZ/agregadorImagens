@@ -52,47 +52,62 @@ function Cabecalho() {
           <Offcanvas.Title>Menu</Offcanvas.Title>
         </Offcanvas.Header>
 
-        <Offcanvas.Body>
-          <div className={styles.drawerTitle}>Atalhos</div>
+        <Offcanvas.Body className={styles.drawerBody}>
+          <div>
+            <div className={styles.drawerTitle}>Atalhos</div>
 
-          <nav className={styles.drawerNav}>
-            <NavLink
-              to="/"
-              end
-              className={getLinkClassName}
-              onClick={() => setShowMenu(false)}
-            >
-              Home
-            </NavLink>
-
-            <NavLink
-              to="/categorias"
-              end
-              className={getLinkClassName}
-              onClick={() => setShowMenu(false)}
-            >
-              Ver tudo
-            </NavLink>
-
-            {categorias.map((categoria) => (
+            <nav className={styles.drawerNav}>
               <NavLink
-                key={categoria.id}
-                to={`/categorias/${encodeURIComponent(categoria.nome)}`}
+                to="/"
+                end
                 className={getLinkClassName}
-                style={
-                  categoria.cor
-                    ? {
-                        borderColor: categoria.cor,
-                        boxShadow: `inset 4px 0 0 ${categoria.cor}`,
-                      }
-                    : undefined
-                }
                 onClick={() => setShowMenu(false)}
               >
-                {categoria.nome}
+                Home
               </NavLink>
-            ))}
-          </nav>
+
+              <NavLink
+                to="/categorias"
+                end
+                className={getLinkClassName}
+                onClick={() => setShowMenu(false)}
+              >
+                Ver tudo
+              </NavLink>
+
+              {categorias.map((categoria) => (
+                <NavLink
+                  key={categoria.id}
+                  to={`/categorias/${encodeURIComponent(categoria.nome)}`}
+                  className={getLinkClassName}
+                  style={
+                    categoria.cor
+                      ? {
+                          borderColor: categoria.cor,
+                          boxShadow: `inset 4px 0 0 ${categoria.cor}`,
+                        }
+                      : undefined
+                  }
+                  onClick={() => setShowMenu(false)}
+                >
+                  {categoria.nome}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+
+          <div className={styles.drawerFooter}>
+            <NavLink
+              to="/lixeira"
+              end
+              className={({ isActive }) =>
+                `${getLinkClassName({ isActive })} ${styles.drawerTrashLink}`.trim()
+              }
+              onClick={() => setShowMenu(false)}
+            >
+              Lixeira
+            </NavLink>
+          </div>
         </Offcanvas.Body>
       </Offcanvas>
     </>

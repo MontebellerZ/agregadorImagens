@@ -1,4 +1,4 @@
-import type { TFoto } from "../../../types/foto.type";
+import type { TFoto } from "../../../../types/foto.type";
 import calcAddWidth from "./calcAddWidth";
 import copyFoto from "./copyFoto";
 import resizeFullRow from "./resizeFullRow";
@@ -13,9 +13,15 @@ function calcRowFotos(
 
   let row: TFoto[] = [];
   let rowWidth = 0;
+  let index = 0;
+  let pending: TFoto | null = null;
 
-  while (fotos.length) {
-    const foto = fotos.shift()!;
+  while (index < fotos.length || pending) {
+    const foto: TFoto | undefined = pending ?? fotos[index++];
+    pending = null;
+
+    if (!foto) continue;
+
     const copy = copyFoto(foto, desiredHeight);
 
     const newRowWidth = calcAddWidth(copy, rowWidth, gap);
@@ -34,7 +40,7 @@ function calcRowFotos(
       row.push(copy);
       rowWidth = newRowWidth;
     } else {
-      fotos.unshift(foto);
+      pending = foto;
     }
 
     resizedFotos.push(...resizeFullRow(row, availableWidth, rowWidth));

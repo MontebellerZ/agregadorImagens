@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import type { TFoto } from "../../../types/foto.type";
 import styles from "./fotoModal.module.scss";
+import { FiRotateCcw, FiTrash2 } from "react-icons/fi";
 import CategoriaStorage from "../../../config/Storage/Stores/Categoria.store";
+import LixeiraStorage from "../../../config/Storage/Stores/Lixeira.store.ts";
 import {
   assignCategoriaAFoto,
   createCategory,
@@ -13,6 +15,7 @@ interface IFotoModal {
   fotoIndex: number;
   totalFotos: number;
   onCategoriasChange: () => void;
+  onTrashStateChange: (fotoSrc?: string) => void;
   onClose: () => void;
   onNavigate: (direction: "prev" | "next") => void;
 }
@@ -22,12 +25,14 @@ function FotoModal({
   fotoIndex,
   totalFotos,
   onCategoriasChange,
+  onTrashStateChange,
   onClose,
   onNavigate,
 }: IFotoModal) {
   const [novaCategoria, setNovaCategoria] = useState("");
   const [novaCor, setNovaCor] = useState("#746baf");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isTrashConfirmOpen, setIsTrashConfirmOpen] = useState(false);
 
   const todasCategorias = CategoriaStorage.get() || [];
   const categoriasFoto = foto ? getCategoriasFoto(foto) : [];
@@ -44,11 +49,17 @@ function FotoModal({
           setIsCreateModalOpen(false);
           return;
         }
+
+        if (isTrashConfirmOpen) {
+          setIsTrashConfirmOpen(false);
+          return;
+        }
+
         onClose();
         return;
       }
 
-      if (isCreateModalOpen) {
+      if (isCreateModalOpen || isTrashConfirmOpen) {
         return;
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
@@ -63,9 +74,11 @@ function FotoModal({
       window.addEventListener("keydown", handleKeyPress);
       return () => window.removeEventListener("keydown", handleKeyPress);
     }
-  }, [foto, isCreateModalOpen, onClose, onNavigate]);
+  }, [foto, isCreateModalOpen, isTrashConfirmOpen, onClose, onNavigate]);
 
   if (!foto) return null;
+
+  const isInTrash = LixeiraStorage.has(foto.src);
 
   const handleToggleCategoria = (categoriaId: string) => {
     setCategoriasSelecionadas((current) => {
@@ -108,6 +121,38 @@ function FotoModal({
     }
   };
 
+  const handleConfirmMoveToTrash = () => {
+    LixeiraStorage.moveToTrash(foto.src);
+    setIsTrashConfirmOpen(false);
+    onTrashStateChange(foto.src);
+
+    if (fotoIndex < totalFotos - 1) {
+      onNavigate("next");
+      return;
+    }
+
+    if (fotoIndex > 0) {
+      onNavigate("prev");
+      return;
+    }
+
+    onClose();
+  };
+
+  const handleRestoreFromTrash = () => {
+    LixeiraStorage.restore(foto.src);
+    onTrashStateChange();
+  };
+
+  const handleTrashAction = () => {
+    if (isInTrash) {
+      handleRestoreFromTrash();
+      return;
+    }
+
+    setIsTrashConfirmOpen(true);
+  };
+
   return (
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div className={styles.modal}>
@@ -116,9 +161,22 @@ function FotoModal({
             {fotoIndex + 1} de {totalFotos}
           </span>
 
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Fechar modal">
-            ✕
-          </button>
+          <div className={styles.headerActions}>
+            <button
+              type="button"
+              className={styles.headerActionBtn}
+              data-variant={isInTrash ? "restore" : "trash"}
+              onClick={handleTrashAction}
+              aria-label={isInTrash ? "Restaurar da lixeira" : "Mover para lixeira"}
+              title={isInTrash ? "Restaurar da lixeira" : "Mover para lixeira"}
+            >
+              {isInTrash ? <FiRotateCcw aria-hidden="true" /> : <FiTrash2 aria-hidden="true" />}
+            </button>
+
+            <button className={styles.closeBtn} onClick={onClose} aria-label="Fechar modal">
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className={styles.showImage}>
@@ -221,6 +279,36 @@ function FotoModal({
                     disabled={!novaCategoria.trim()}
                   >
                     Confirmar criação
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isTrashConfirmOpen && (
+            <div className={styles.confirmBackdrop} onClick={() => setIsTrashConfirmOpen(false)}>
+              <div className={styles.confirmModal} onClick={(e) => e.stopPropagation()}>
+                <h4>Mover para lixeira</h4>
+                <p>
+                  Se você realmente mandar esta foto para a lixeira, poderá abrir a lixeira para
+                  restaurar a foto depois. Enquanto ela estiver na lixeira, ela não vai aparecer
+                  mais em nenhuma outra categoria nem no Ver tudo.
+                </p>
+
+                <div className={styles.confirmActions}>
+                  <button
+                    type="button"
+                    className={styles.secondaryBtn}
+                    onClick={() => setIsTrashConfirmOpen(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.confirmTrashBtn}
+                    onClick={handleConfirmMoveToTrash}
+                  >
+                    Confirmar envio
                   </button>
                 </div>
               </div>

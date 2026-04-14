@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { NavLink } from "react-router";
 import type { TCategoria } from "../../../types/categoria.type";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import LixeiraStorage from "../../../config/Storage/Stores/Lixeira.store.ts";
 
 const DEFAULT_COLOR = "#746baf";
 
@@ -74,9 +75,14 @@ function Home() {
     <div className={styles.home}>
       <div className={styles.topRow}>
         <h2>Categorias</h2>
-        <NavLink to="/categorias" className={styles.viewAllLink}>
-          Ver tudo
-        </NavLink>
+        <div className={styles.topActions}>
+          <NavLink to="/categorias" className={styles.viewAllLink}>
+            Ver tudo
+          </NavLink>
+          <NavLink to="/lixeira" className={`${styles.viewAllLink} ${styles.trashLink}`}>
+            Lixeira
+          </NavLink>
+        </div>
       </div>
 
       {categorias.length === 0 ? (
@@ -86,7 +92,8 @@ function Home() {
       ) : (
         <div className={styles.gridCategorias}>
           {categorias.map((categoria) => {
-            const previewFotos = categoria.fotos.slice(0, 8);
+            const fotosAtivas = categoria.fotos.filter((foto) => !LixeiraStorage.has(foto.src));
+            const previewFotos = fotosAtivas.slice(0, 8);
 
             return (
               <article
@@ -104,7 +111,7 @@ function Home() {
                 >
                   <h3>{categoria.nome}</h3>
                   <p>
-                    {categoria.fotos.length} {categoria.fotos.length === 1 ? "foto" : "fotos"}
+                    {fotosAtivas.length} {fotosAtivas.length === 1 ? "foto" : "fotos"}
                   </p>
 
                   <div className={styles.preview}>

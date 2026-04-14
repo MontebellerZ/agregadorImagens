@@ -21,6 +21,12 @@
   gap: 1rem;
 }
 
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
 .viewAllLink {
   text-decoration: none;
   color: #f0f0fa;
@@ -37,6 +43,16 @@
   &:hover {
     background: #333343;
     border-color: #5e5e7d;
+  }
+}
+
+.trashLink {
+  background: #3a2626;
+  border-color: #6f3d3d;
+
+  &:hover {
+    background: #4a2d2d;
+    border-color: #8c4f4f;
   }
 }
 
@@ -300,5 +316,14 @@
   .topRow {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .topActions {
+    width: 100%;
+
+    .viewAllLink {
+      text-align: center;
+      flex: 1;
+    }
   }
 }
