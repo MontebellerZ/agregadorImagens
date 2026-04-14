@@ -14,11 +14,10 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "categorias",
+        path: "categorias/:nome?",
         element: <Categorias />,
-        children: [{ path: ":nome" }],
         loader: ({ params }) => {
-          const cat = params.nome;
+          const cat = params.nome ? decodeURIComponent(params.nome) : undefined;
           return cat ? CategoriaStorage.getByNome(cat) : null;
         },
       },
