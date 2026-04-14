@@ -1,4 +1,7 @@
 .home {
+  --grid-card-size: 420px;
+  --grid-gap: 1rem;
+  --grid-cols: 3;
   width: 100%;
   height: 100%;
   display: flex;
@@ -19,6 +22,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  width: min(
+    100%,
+    calc((var(--grid-card-size) * var(--grid-cols)) + ((var(--grid-cols) - 1) * var(--grid-gap)) )
+  );
+  margin: 0 auto;
 }
 
 .topActions {
@@ -57,6 +65,11 @@
 }
 
 .emptyState {
+  width: min(
+    100%,
+    calc((var(--grid-card-size) * var(--grid-cols)) + ((var(--grid-cols) - 1) * var(--grid-gap)) )
+  );
+  margin: 0 auto;
   border: 1px dashed #50506b;
   border-radius: 12px;
   padding: 1rem;
@@ -65,9 +78,14 @@
 
 .gridCategorias {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 420px));
-  justify-content: center;
-  gap: 1rem;
+  width: min(
+    100%,
+    calc((var(--grid-card-size) * var(--grid-cols)) + ((var(--grid-cols) - 1) * var(--grid-gap)) )
+  );
+  margin: 0 auto;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, var(--grid-card-size)));
+  justify-content: stretch;
+  gap: var(--grid-gap);
 }
 
 .cardCategoria {
@@ -291,16 +309,22 @@
 }
 
 @media (max-width: 960px) {
+  .home {
+    --grid-cols: 2;
+  }
+
   .gridCategorias {
-    grid-template-columns: repeat(2, minmax(0, 420px));
-    justify-content: center;
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, var(--grid-card-size)));
   }
 }
 
 @media (max-width: 640px) {
+  .home {
+    --grid-cols: 1;
+  }
+
   .gridCategorias {
-    grid-template-columns: minmax(0, 420px);
-    justify-content: center;
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, var(--grid-card-size)));
   }
 
   .modalActions {
@@ -320,6 +344,7 @@
 
   .topActions {
     width: 100%;
+    flex-wrap: wrap;
 
     .viewAllLink {
       text-align: center;
