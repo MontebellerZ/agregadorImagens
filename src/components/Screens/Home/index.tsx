@@ -85,47 +85,64 @@ function Home() {
         </div>
       ) : (
         <div className={styles.gridCategorias}>
-          {categorias.map((categoria) => (
-            <article
-              key={categoria.id}
-              className={styles.cardCategoria}
-              style={
-                {
-                  "--categoria-cor": categoria.cor || DEFAULT_COLOR,
-                } as React.CSSProperties
-              }
-            >
-              <NavLink
-                to={`/categorias/${encodeURIComponent(categoria.nome)}`}
-                className={styles.cardContent}
+          {categorias.map((categoria) => {
+            const previewFotos = categoria.fotos.slice(0, 8);
+
+            return (
+              <article
+                key={categoria.id}
+                className={styles.cardCategoria}
+                style={
+                  {
+                    "--categoria-cor": categoria.cor || DEFAULT_COLOR,
+                  } as React.CSSProperties
+                }
               >
-                <h3>{categoria.nome}</h3>
-                <p>
-                  {categoria.fotos.length} {categoria.fotos.length === 1 ? "foto" : "fotos"}
-                </p>
-              </NavLink>
-
-              <div className={styles.cardActions}>
-                <button
-                  type="button"
-                  className={styles.actionBtn}
-                  onClick={() => abrirModalEdicao(categoria)}
-                  aria-label={`Editar categoria ${categoria.nome}`}
+                <NavLink
+                  to={`/categorias/${encodeURIComponent(categoria.nome)}`}
+                  className={styles.cardContent}
                 >
-                  <FiEdit2 />
-                </button>
+                  <h3>{categoria.nome}</h3>
+                  <p>
+                    {categoria.fotos.length} {categoria.fotos.length === 1 ? "foto" : "fotos"}
+                  </p>
 
-                <button
-                  type="button"
-                  className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                  onClick={() => setCategoriaExcluindo(categoria)}
-                  aria-label={`Excluir categoria ${categoria.nome}`}
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-            </article>
-          ))}
+                  <div className={styles.preview}>
+                    {previewFotos.map((foto, index) => (
+                      <img
+                        key={`${categoria.id}_${foto.src}`}
+                        src={foto.src}
+                        alt={`Preview ${index + 1} da categoria ${categoria.nome}`}
+                        className={styles.previewThumb}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ))}
+                  </div>
+                </NavLink>
+
+                <div className={styles.cardActions}>
+                  <button
+                    type="button"
+                    className={styles.actionBtn}
+                    onClick={() => abrirModalEdicao(categoria)}
+                    aria-label={`Editar categoria ${categoria.nome}`}
+                  >
+                    <FiEdit2 />
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                    onClick={() => setCategoriaExcluindo(categoria)}
+                    aria-label={`Excluir categoria ${categoria.nome}`}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
 
