@@ -187,7 +187,6 @@ function Galeria(props: IGaleria) {
                 filter: isRecentlyTrashed ? "grayscale(1) brightness(0.6)" : undefined,
                 pointerEvents: isRecentlyTrashed ? "none" : undefined,
                 opacity: isRecentlyTrashed ? 0.88 : undefined,
-                transition: "filter 180ms ease, opacity 180ms ease",
               }}
               onClick={isRecentlyTrashed ? undefined : () => handleAbrirModal(f)}
             />

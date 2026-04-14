@@ -93,7 +93,7 @@ function Home() {
         <div className={styles.gridCategorias}>
           {categorias.map((categoria) => {
             const fotosAtivas = categoria.fotos.filter((foto) => !LixeiraStorage.has(foto.src));
-            const previewFotos = fotosAtivas.slice(0, 10);
+            const previewFotos = fotosAtivas.slice(0, 5);
 
             return (
               <article

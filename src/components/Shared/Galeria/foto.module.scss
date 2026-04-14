@@ -9,10 +9,11 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.2s ease;
+    transition: 0.2s ease;
+    overflow: hidden;
 
     &:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
   }
 
