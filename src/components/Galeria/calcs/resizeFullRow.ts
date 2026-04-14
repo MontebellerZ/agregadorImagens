@@ -6,7 +6,7 @@ function resizeFullRow(row: TFoto[], availableWidth: number, rowWidth: number) {
   const diff = availableWidth - rowWidth;
 
   const changeHeight = Math.floor(diff / widthPerHeight);
-  const newRowHeight = row[0].height! + changeHeight;
+  const newRowHeight = Math.min(row[0].height! + changeHeight, 400);
 
   row.forEach((f) => {
     f.height = newRowHeight;

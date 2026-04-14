@@ -1,12 +1,13 @@
 .galeria {
   width: 100%;
   display: flex;
+  justify-content: space-between;
   flex-direction: row;
   flex-wrap: wrap;
   will-change: transform;
+  user-select: none;
 
   .foto {
-    flex: 1;
     object-fit: cover;
     box-sizing: border-box;
     will-change: transform;

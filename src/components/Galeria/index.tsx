@@ -79,6 +79,7 @@ function Galeria(props: IGaleria) {
           }}
         />
       ))}
+      {loaded.length && <div style={{ flex: 1 }}></div>}
       <h3 ref={loadingRef} className={styles.loadingText}>
         {ended ? "Isso é tudo!" : "Carregando..."}
       </h3>
