@@ -22,12 +22,13 @@ function Galeria(props: IGaleria) {
   const loadVersionRef = useRef(0);
 
   const [containerWidth, setContainerWidth] = useState(0);
-  const [limit, setLimit] = useState(0);
-  const [loaded, setLoaded] = useState<TFoto[]>([]);
-  const [modalFoto, setModalFoto] = useState<TFoto | null>(null);
-  const [modalFotoIndex, setModalFotoIndex] = useState(0);
+  const [limitByKey, setLimitByKey] = useState<Record<string, number>>({});
+  const [loadedState, setLoadedState] = useState<{ key: string; fotos: TFoto[] }>({
+    key: "",
+    fotos: [],
+  });
+  const [modalFotoSrc, setModalFotoSrc] = useState<string | null>(null);
   const [categoriasVersion, setCategoriasVersion] = useState(0);
-  const [trashVersion, setTrashVersion] = useState(0);
   const [recentlyTrashed, setRecentlyTrashed] = useState<Set<string>>(() => new Set());
 
   const fotosFiltradas = useMemo(
@@ -41,7 +42,7 @@ function Galeria(props: IGaleria) {
 
         return !isInTrash || recentlyTrashed.has(foto.src);
       }),
-    [props.fotos, props.showOnlyTrashed, trashVersion, recentlyTrashed],
+    [props.fotos, props.showOnlyTrashed, recentlyTrashed],
   );
 
   const fotosKey = useMemo(
@@ -49,24 +50,41 @@ function Galeria(props: IGaleria) {
     [fotosFiltradas],
   );
 
+  const limit = useMemo(
+    () => limitByKey[fotosKey] ?? Math.min(LIMIT_STEP, fotosFiltradas.length),
+    [limitByKey, fotosKey, fotosFiltradas.length],
+  );
+
+  const loaded = useMemo(
+    () => (loadedState.key === fotosKey ? loadedState.fotos : []),
+    [loadedState, fotosKey],
+  );
+
   const ended = useMemo(() => limit >= fotosFiltradas.length, [limit, fotosFiltradas]);
 
+  const modalFotoIndex = useMemo(() => {
+    if (!modalFotoSrc) return -1;
+    return fotosFiltradas.findIndex((foto) => foto.src === modalFotoSrc);
+  }, [modalFotoSrc, fotosFiltradas]);
+
+  const modalFoto = useMemo(() => {
+    if (modalFotoIndex < 0) return null;
+    return fotosFiltradas[modalFotoIndex] || null;
+  }, [fotosFiltradas, modalFotoIndex]);
+
   const handleAbrirModal = (foto: TFoto) => {
-    setModalFoto(foto);
-    const index = fotosFiltradas.findIndex((f) => f.src === foto.src);
-    setModalFotoIndex(index);
+    setModalFotoSrc(foto.src);
   };
 
   const handleNavegar = (direction: "prev" | "next") => {
     const newIndex = direction === "next" ? modalFotoIndex + 1 : modalFotoIndex - 1;
     if (newIndex >= 0 && newIndex < fotosFiltradas.length) {
-      setModalFoto(fotosFiltradas[newIndex]);
-      setModalFotoIndex(newIndex);
+      setModalFotoSrc(fotosFiltradas[newIndex].src);
     }
   };
 
   const handleFecharModal = () => {
-    setModalFoto(null);
+    setModalFotoSrc(null);
   };
 
   const handleCategoriasChange = () => {
@@ -74,37 +92,19 @@ function Galeria(props: IGaleria) {
   };
 
   const handleTrashStateChange = (fotoSrc?: string) => {
-    if (fotoSrc) {
-      setRecentlyTrashed((current) => {
-        const next = new Set(current);
+    setRecentlyTrashed((current) => {
+      const next = new Set(current);
+      if (fotoSrc) {
         next.add(fotoSrc);
-        return next;
-      });
-    }
-
-    setTrashVersion((current) => current + 1);
+      }
+      return next;
+    });
   };
-
-  useEffect(() => {
-    setLoaded([]);
-    setLimit(Math.min(LIMIT_STEP, fotosFiltradas.length));
-  }, [fotosKey, fotosFiltradas.length]);
-
-  useEffect(() => {
-    if (!modalFoto) return;
-
-    const nextIndex = fotosFiltradas.findIndex((foto) => foto.src === modalFoto.src);
-    if (nextIndex === -1) {
-      setModalFoto(null);
-      return;
-    }
-
-    setModalFotoIndex(nextIndex);
-  }, [fotosFiltradas, modalFoto]);
 
   useEffect(() => {
     if (containerWidth === 0 || limit === 0) return;
 
+    const currentKey = fotosKey;
     const currentVersion = ++loadVersionRef.current;
     let cancelled = false;
 
@@ -113,13 +113,13 @@ function Galeria(props: IGaleria) {
       .then((fotos) => {
         if (cancelled) return;
         if (currentVersion !== loadVersionRef.current) return;
-        setLoaded(fotos);
+        setLoadedState({ key: currentKey, fotos });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [limit, fotosKey, containerWidth]);
+  }, [limit, fotosKey, fotosFiltradas, containerWidth]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -140,7 +140,19 @@ function Galeria(props: IGaleria) {
 
     const visibleObserver = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setLimit((l) => l + LIMIT_STEP);
+        if (!entry.isIntersecting) return;
+
+        setLimitByKey((current) => {
+          const currentLimit = current[fotosKey] ?? Math.min(LIMIT_STEP, fotosFiltradas.length);
+          const nextLimit = Math.min(currentLimit + LIMIT_STEP, fotosFiltradas.length);
+
+          if (nextLimit === currentLimit) return current;
+
+          return {
+            ...current,
+            [fotosKey]: nextLimit,
+          };
+        });
       },
       {
         root: null,
@@ -152,7 +164,7 @@ function Galeria(props: IGaleria) {
     visibleObserver.observe(loadingRef.current);
 
     return () => visibleObserver.disconnect();
-  }, []);
+  }, [fotosKey, fotosFiltradas.length]);
 
   return (
     <>
@@ -189,7 +201,7 @@ function Galeria(props: IGaleria) {
       <FotoModal
         key={modalFoto?.src || "sem-foto"}
         foto={modalFoto}
-        fotoIndex={modalFotoIndex}
+        fotoIndex={modalFotoIndex < 0 ? 0 : modalFotoIndex}
         totalFotos={fotosFiltradas.length}
         onCategoriasChange={handleCategoriasChange}
         onTrashStateChange={handleTrashStateChange}
