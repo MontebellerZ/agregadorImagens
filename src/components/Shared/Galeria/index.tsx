@@ -34,8 +34,7 @@ function Galeria(props: IGaleria) {
   };
 
   const handleNavegar = (direction: "prev" | "next") => {
-    const newIndex =
-      direction === "next" ? modalFotoIndex + 1 : modalFotoIndex - 1;
+    const newIndex = direction === "next" ? modalFotoIndex + 1 : modalFotoIndex - 1;
     if (newIndex >= 0 && newIndex < props.fotos.length) {
       setModalFoto(props.fotos[newIndex]);
       setModalFotoIndex(newIndex);
@@ -92,38 +91,38 @@ function Galeria(props: IGaleria) {
   }, []);
 
   return (
-      <>
-    <div ref={containerRef} className={styles.galeria} style={{ gap: GALLERY_GAP }}>
-      {loaded.map((f) => (
-        <Foto
-          key={f.src}
-          fotoObj={f}
-          categoriasVersion={categoriasVersion}
-          src={f.src}
-          decoding="sync"
-          className={styles.foto}
-          style={{
-            aspectRatio: f.aspect,
-            height: f.height,
-            borderRadius: GALLERY_GAP,
-          }}
-          onClick={() => handleAbrirModal(f)}
-        />
-      ))}
-      {loaded.length && <div style={{ flex: 1 }}></div>}
-      <h3 ref={loadingRef} className={styles.loadingText}>
-        {ended ? "Isso é tudo!" : "Carregando..."}
-      </h3>
-    </div>
-    <FotoModal
-      key={modalFoto?.src || "sem-foto"}
-      foto={modalFoto}
-      fotoIndex={modalFotoIndex}
-      totalFotos={props.fotos.length}
-      onCategoriasChange={handleCategoriasChange}
-      onClose={handleFecharModal}
-      onNavigate={handleNavegar}
-    />
+    <>
+      <div ref={containerRef} className={styles.galeria} style={{ gap: GALLERY_GAP }}>
+        {loaded.map((f) => (
+          <Foto
+            key={f.src}
+            fotoObj={f}
+            categoriasVersion={categoriasVersion}
+            src={f.src}
+            decoding="sync"
+            className={styles.foto}
+            style={{
+              aspectRatio: f.aspect,
+              height: f.height,
+              borderRadius: GALLERY_GAP,
+            }}
+            onClick={() => handleAbrirModal(f)}
+          />
+        ))}
+        {loaded.length ? <div style={{ flex: 1 }}></div> : <></>}
+        <h3 ref={loadingRef} className={styles.loadingText}>
+          {ended ? "Isso é tudo!" : "Carregando..."}
+        </h3>
+      </div>
+      <FotoModal
+        key={modalFoto?.src || "sem-foto"}
+        foto={modalFoto}
+        fotoIndex={modalFotoIndex}
+        totalFotos={props.fotos.length}
+        onCategoriasChange={handleCategoriasChange}
+        onClose={handleFecharModal}
+        onNavigate={handleNavegar}
+      />
     </>
   );
 }

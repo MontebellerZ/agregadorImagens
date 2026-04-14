@@ -76,7 +76,7 @@ function Cabecalho() {
 
             {categorias.map((categoria) => (
               <NavLink
-                key={categoria.nome}
+                key={categoria.id}
                 to={`/categorias/${encodeURIComponent(categoria.nome)}`}
                 className={getLinkClassName}
                 style={

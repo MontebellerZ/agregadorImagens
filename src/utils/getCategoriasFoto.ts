@@ -7,9 +7,8 @@ export function getCategoriasFoto(foto: TFoto): TCategoria[] {
   return categorias.filter((cat) => cat.fotos.some((f) => f.src === foto.src));
 }
 
-export function assignCategoriaAFoto(foto: TFoto, categoriaNome: string) {
-  const categorias = CategoriaStorage.get() || [];
-  const categoria = categorias.find((c) => c.nome === categoriaNome);
+export function assignCategoriaAFoto(foto: TFoto, categoriaId: string) {
+  const categoria = CategoriaStorage.getById(categoriaId);
 
   if (!categoria) return;
 
@@ -22,33 +21,18 @@ export function assignCategoriaAFoto(foto: TFoto, categoriaNome: string) {
     categoria.fotos.push(foto);
   }
 
-  CategoriaStorage.saveByNome(categoria);
+  CategoriaStorage.saveById(categoria);
 }
 
-export function removeFotoDeCategoria(foto: TFoto, categoriaNome: string) {
-  const categorias = CategoriaStorage.get() || [];
-  const categoria = categorias.find((c) => c.nome === categoriaNome);
+export function removeFotoDeCategoria(foto: TFoto, categoriaId: string) {
+  const categoria = CategoriaStorage.getById(categoriaId);
 
   if (!categoria) return;
 
   categoria.fotos = categoria.fotos.filter((f) => f.src !== foto.src);
-  CategoriaStorage.saveByNome(categoria);
+  CategoriaStorage.saveById(categoria);
 }
 
 export function createCategory(nome: string, cor?: string) {
-  const categorias = CategoriaStorage.get() || [];
-  const nomeNormalizado = nome.trim();
-
-  if (!nomeNormalizado || categorias.some((c) => c.nome === nomeNormalizado)) {
-    return; // Categoria já existe
-  }
-
-  CategoriaStorage.save([
-    ...categorias,
-    {
-      nome: nomeNormalizado,
-      fotos: [],
-      cor,
-    },
-  ]);
+  return CategoriaStorage.create(nome, cor);
 }

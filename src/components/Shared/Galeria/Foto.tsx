@@ -21,7 +21,7 @@ const Foto = React.memo(({ fotoObj, categoriasVersion = 0, onClick, ...props }: 
 				<div className={styles.categorias}>
 					{categorias.map((categoria) => (
 						<span
-							key={categoria.nome}
+							key={categoria.id}
 							className={styles.tag}
 							style={categoria.cor ? { backgroundColor: categoria.cor } : undefined}
 						>

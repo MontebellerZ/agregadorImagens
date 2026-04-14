@@ -32,7 +32,7 @@ function FotoModal({
   const todasCategorias = CategoriaStorage.get() || [];
   const categoriasFoto = foto ? getCategoriasFoto(foto) : [];
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<Set<string>>(
-    () => new Set(categoriasFoto.map((categoria) => categoria.nome)),
+    () => new Set(categoriasFoto.map((categoria) => categoria.id)),
   );
 
   useEffect(() => {
@@ -67,18 +67,18 @@ function FotoModal({
 
   if (!foto) return null;
 
-  const handleToggleCategoria = (categoriaNome: string) => {
+  const handleToggleCategoria = (categoriaId: string) => {
     setCategoriasSelecionadas((current) => {
       const next = new Set(current);
-      if (next.has(categoriaNome)) {
-        next.delete(categoriaNome);
+      if (next.has(categoriaId)) {
+        next.delete(categoriaId);
       } else {
-        next.add(categoriaNome);
+        next.add(categoriaId);
       }
       return next;
     });
 
-    assignCategoriaAFoto(foto, categoriaNome);
+    assignCategoriaAFoto(foto, categoriaId);
     onCategoriasChange();
   };
 
@@ -86,14 +86,16 @@ function FotoModal({
     const nomeCategoria = novaCategoria.trim();
     if (!nomeCategoria) return;
 
-    const categoriaExiste = todasCategorias.some((categoria) => categoria.nome === nomeCategoria);
+    const categoriaExiste = CategoriaStorage.existsNome(nomeCategoria);
     if (categoriaExiste) {
       return;
     }
 
-    createCategory(nomeCategoria, novaCor);
-    assignCategoriaAFoto(foto, nomeCategoria);
-    setCategoriasSelecionadas((current) => new Set(current).add(nomeCategoria));
+    const categoriaCriada = createCategory(nomeCategoria, novaCor);
+    if (!categoriaCriada) return;
+
+    assignCategoriaAFoto(foto, categoriaCriada.id);
+    setCategoriasSelecionadas((current) => new Set(current).add(categoriaCriada.id));
     onCategoriasChange();
     setNovaCategoria("");
     setNovaCor("#746baf");
@@ -147,12 +149,12 @@ function FotoModal({
 
           <div className={styles.categoriasList}>
             {todasCategorias.map((categoria) => {
-              const isChecked = categoriasSelecionadas.has(categoria.nome);
+              const isChecked = categoriasSelecionadas.has(categoria.id);
               return (
                 <button
                   type="button"
-                  key={categoria.nome}
-                  onClick={() => handleToggleCategoria(categoria.nome)}
+                  key={categoria.id}
+                  onClick={() => handleToggleCategoria(categoria.id)}
                   className={styles.categoriaBtn}
                   data-selected={isChecked}
                   style={

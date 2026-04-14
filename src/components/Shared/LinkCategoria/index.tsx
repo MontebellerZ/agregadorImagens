@@ -9,7 +9,7 @@ interface ILinkCategoria {
 function LinkCategoria(props: ILinkCategoria) {
   const navigate = useNavigate();
 
-  const link = props.categoria?.nome || "";
+  const link = props.categoria?.nome ? encodeURIComponent(props.categoria.nome) : "";
   const nome = props.categoria?.nome || "Ver tudo";
   const cor = props.categoria?.cor;
 
