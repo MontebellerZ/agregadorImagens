@@ -4,6 +4,7 @@ import styles from "./styles.module.scss";
 import loadFotos from "../../../utils/loadFotos";
 import calcRowFotos from "./calcs/calcRowFotos";
 import Foto from "./Foto";
+import FotoModal from "./FotoModal";
 
 const GALLERY_GAP = 6;
 const LIMIT_STEP = 50;
@@ -20,8 +21,34 @@ function Galeria(props: IGaleria) {
   const [containerWidth, setContainerWidth] = useState(0);
   const [limit, setLimit] = useState(0);
   const [loaded, setLoaded] = useState<TFoto[]>([]);
+  const [modalFoto, setModalFoto] = useState<TFoto | null>(null);
+  const [modalFotoIndex, setModalFotoIndex] = useState(0);
+  const [categoriasVersion, setCategoriasVersion] = useState(0);
 
   const ended = useMemo(() => limit >= props.fotos.length, [limit, props.fotos]);
+
+  const handleAbrirModal = (foto: TFoto) => {
+    setModalFoto(foto);
+    const index = props.fotos.findIndex((f) => f.src === foto.src);
+    setModalFotoIndex(index);
+  };
+
+  const handleNavegar = (direction: "prev" | "next") => {
+    const newIndex =
+      direction === "next" ? modalFotoIndex + 1 : modalFotoIndex - 1;
+    if (newIndex >= 0 && newIndex < props.fotos.length) {
+      setModalFoto(props.fotos[newIndex]);
+      setModalFotoIndex(newIndex);
+    }
+  };
+
+  const handleFecharModal = () => {
+    setModalFoto(null);
+  };
+
+  const handleCategoriasChange = () => {
+    setCategoriasVersion((current) => current + 1);
+  };
 
   useEffect(() => {
     if (containerWidth === 0 || limit === 0) return;
@@ -65,10 +92,13 @@ function Galeria(props: IGaleria) {
   }, []);
 
   return (
+      <>
     <div ref={containerRef} className={styles.galeria} style={{ gap: GALLERY_GAP }}>
       {loaded.map((f) => (
         <Foto
           key={f.src}
+          fotoObj={f}
+          categoriasVersion={categoriasVersion}
           src={f.src}
           decoding="sync"
           className={styles.foto}
@@ -77,6 +107,7 @@ function Galeria(props: IGaleria) {
             height: f.height,
             borderRadius: GALLERY_GAP,
           }}
+          onClick={() => handleAbrirModal(f)}
         />
       ))}
       {loaded.length && <div style={{ flex: 1 }}></div>}
@@ -84,6 +115,16 @@ function Galeria(props: IGaleria) {
         {ended ? "Isso é tudo!" : "Carregando..."}
       </h3>
     </div>
+    <FotoModal
+      key={modalFoto?.src || "sem-foto"}
+      foto={modalFoto}
+      fotoIndex={modalFotoIndex}
+      totalFotos={props.fotos.length}
+      onCategoriasChange={handleCategoriasChange}
+      onClose={handleFecharModal}
+      onNavigate={handleNavegar}
+    />
+    </>
   );
 }
 
