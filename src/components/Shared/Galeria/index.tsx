@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { TFoto } from "../../types/foto.type";
+import type { TFoto } from "../../../types/foto.type";
 import styles from "./styles.module.scss";
-import loadFotos from "../../utils/loadFotos";
+import loadFotos from "../../../utils/loadFotos";
 import calcRowFotos from "./calcs/calcRowFotos";
 import Foto from "./Foto";
 

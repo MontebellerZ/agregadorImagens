@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router";
 import type { TCategoria } from "../../../types/categoria.type";
 import { useContext } from "react";
 import { FotosContext } from "../../../config/Context/createContext";
-import Galeria from "../../Galeria";
+import Galeria from "../../Shared/Galeria";
 
 function Categorias() {
   const allFotos = useContext(FotosContext);

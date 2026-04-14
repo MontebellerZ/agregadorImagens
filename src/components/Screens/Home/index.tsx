@@ -1,6 +1,6 @@
 import styles from "./styles.module.scss";
 import CategoriaStorage from "../../../config/Storage/Stores/Categoria.store";
-import LinkCategoria from "../../LinkCategoria";
+import LinkCategoria from "../../Shared/LinkCategoria";
 
 function Home() {
   const categorias = CategoriaStorage.get() || [];
