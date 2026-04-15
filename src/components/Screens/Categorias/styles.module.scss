@@ -14,6 +14,41 @@
   gap: 1rem;
 }
 
+.acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.downloadButton {
+  border: 1px solid rgba(109, 181, 255, 0.55);
+  border-radius: 0.65rem;
+  padding: 0.42rem 0.78rem;
+  color: #eaf4ff;
+  background: linear-gradient(160deg, rgba(54, 112, 181, 0.34), rgba(30, 64, 104, 0.26));
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: transform 140ms ease, filter 140ms ease, border-color 160ms ease, opacity 160ms ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+    border-color: rgba(147, 205, 255, 0.75);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(147, 205, 255, 0.8);
+    outline-offset: 2px;
+  }
+}
+
 .validadoHolder {
   display: inline-flex;
   align-items: center;
@@ -110,5 +145,10 @@
   .topRow {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .acoes {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
