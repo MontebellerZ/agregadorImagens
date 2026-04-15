@@ -21,6 +21,8 @@ export function assignCategoriaAFoto(foto: TFoto, categoriaId: string) {
     categoria.fotos.push(foto);
   }
 
+  categoria.validado = false;
+
   CategoriaStorage.saveById(categoria);
 }
 
@@ -29,7 +31,14 @@ export function removeFotoDeCategoria(foto: TFoto, categoriaId: string) {
 
   if (!categoria) return;
 
+  const totalAntes = categoria.fotos.length;
   categoria.fotos = categoria.fotos.filter((f) => f.src !== foto.src);
+
+  if (categoria.fotos.length === totalAntes) {
+    return;
+  }
+
+  categoria.validado = false;
   CategoriaStorage.saveById(categoria);
 }
 

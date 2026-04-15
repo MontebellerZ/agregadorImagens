@@ -90,7 +90,12 @@ function Cabecalho() {
                   }
                   onClick={() => setShowMenu(false)}
                 >
-                  {categoria.nome}
+                  <span className={styles.drawerLinkLabel}>{categoria.nome}</span>
+                  {categoria.validado && (
+                    <span className={styles.validadoBadge} aria-hidden="true" title="Categoria validada">
+                      ✓
+                    </span>
+                  )}
                 </NavLink>
               ))}
             </nav>

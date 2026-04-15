@@ -25,6 +25,7 @@ export default class CategoriaStorage extends BaseStorage {
       nome: nomeNormalizado,
       fotos: [],
       cor,
+      validado: false,
     };
 
     this.save([...categorias, categoria].sort((a, b) => a.nome.localeCompare(b.nome)));

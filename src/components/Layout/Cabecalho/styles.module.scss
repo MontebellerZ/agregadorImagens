@@ -73,6 +73,10 @@
 }
 
 .drawerLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
   width: 100%;
   text-align: left;
   text-decoration: none;
@@ -93,6 +97,30 @@
     background-color: rgba(255, 255, 255, 0.1);
     transform: translateX(2px);
   }
+}
+
+.drawerLinkLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.validadoBadge {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #f7fff4;
+  border: 1px solid #89ca72;
+  background: radial-gradient(circle at 40% 35%, #8fe073, #5aaf41 72%);
+  box-shadow: 0 0 0 2px rgba(84, 160, 61, 0.2);
 }
 
 .active {

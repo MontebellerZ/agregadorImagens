@@ -5,4 +5,5 @@ export type TCategoria = {
   nome: string;
   fotos: TFoto[];
   cor?: string;
+  validado: boolean;
 };

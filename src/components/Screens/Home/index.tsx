@@ -109,7 +109,18 @@ function Home() {
                   to={`/categorias/${encodeURIComponent(categoria.nome)}`}
                   className={styles.cardContent}
                 >
-                  <h3>{categoria.nome}</h3>
+                  <div className={styles.cardTitleRow}>
+                    <h3>{categoria.nome}</h3>
+                    {categoria.validado && (
+                      <span
+                        className={styles.validadoBadge}
+                        aria-hidden="true"
+                        title="Categoria validada"
+                      >
+                        ✓
+                      </span>
+                    )}
+                  </div>
                   <p>
                     {fotosAtivas.length} {fotosAtivas.length === 1 ? "foto" : "fotos"}
                   </p>
