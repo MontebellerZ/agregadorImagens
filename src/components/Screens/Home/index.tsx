@@ -1,24 +1,45 @@
 import styles from "./styles.module.scss";
 import CategoriaStorage from "../../../config/Storage/Stores/Categoria.store";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router";
 import type { TCategoria } from "../../../types/categoria.type";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import LixeiraStorage from "../../../config/Storage/Stores/Lixeira.store.ts";
 
 const DEFAULT_COLOR = "#746baf";
+const STORAGE_KEY_APENAS_NAO_VALIDADAS = "home_apenas_nao_validadas";
 
 function Home() {
   const [categorias, setCategorias] = useState<TCategoria[]>(() => CategoriaStorage.get() || []);
+  const [apenasNaoValidadas, setApenasNaoValidadas] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY_APENAS_NAO_VALIDADAS) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [categoriaEditandoId, setCategoriaEditandoId] = useState<string | null>(null);
   const [categoriaExcluindo, setCategoriaExcluindo] = useState<TCategoria | null>(null);
   const [nomeEditado, setNomeEditado] = useState("");
   const [corEditada, setCorEditada] = useState(DEFAULT_COLOR);
   const [erroEdicao, setErroEdicao] = useState("");
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_APENAS_NAO_VALIDADAS, apenasNaoValidadas ? "1" : "0");
+    } catch {
+      // Ignora falhas de persistencia e mantem o valor em memoria.
+    }
+  }, [apenasNaoValidadas]);
+
   const categoriaEditando = useMemo(
     () => categorias.find((categoria) => categoria.id === categoriaEditandoId) || null,
     [categorias, categoriaEditandoId],
+  );
+
+  const categoriasFiltradas = useMemo(
+    () => (apenasNaoValidadas ? categorias.filter((categoria) => !categoria.validado) : categorias),
+    [categorias, apenasNaoValidadas],
   );
 
   const refreshCategorias = () => {
@@ -76,6 +97,15 @@ function Home() {
       <div className={styles.topRow}>
         <h2>Categorias</h2>
         <div className={styles.topActions}>
+          <label className={styles.filterToggle}>
+            <span>Apenas não validadas</span>
+            <input
+              type="checkbox"
+              checked={apenasNaoValidadas}
+              onChange={(e) => setApenasNaoValidadas(e.target.checked)}
+            />
+          </label>
+
           <NavLink to="/categorias" className={styles.viewAllLink}>
             Ver tudo
           </NavLink>
@@ -89,9 +119,11 @@ function Home() {
         <div className={styles.emptyState}>
           Nenhuma categoria criada ainda. Abra uma foto para criar sua primeira categoria.
         </div>
+      ) : categoriasFiltradas.length === 0 ? (
+        <div className={styles.emptyState}>Todas as categorias já estão validadas.</div>
       ) : (
         <div className={styles.gridCategorias}>
-          {categorias.map((categoria) => {
+          {categoriasFiltradas.map((categoria) => {
             const fotosAtivas = categoria.fotos.filter((foto) => !LixeiraStorage.has(foto.src));
             const previewFotos = fotosAtivas.slice(0, 5);
 
