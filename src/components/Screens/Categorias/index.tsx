@@ -183,13 +183,13 @@ function Categorias() {
           )}
 
           {isVerTudo && (
-            <label className={styles.switchHolder}>
+            <label className={styles.validadoHolder}>
+              <span>Apenas sem categoria</span>
               <input
                 type="checkbox"
                 checked={mostrarSomenteSemCategoria}
                 onChange={(e) => setApenasSemCategoria(e.target.checked)}
               />
-              <span>Apenas sem categoria</span>
             </label>
           )}
 

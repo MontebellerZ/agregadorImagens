@@ -98,49 +98,6 @@
   }
 }
 
-.switchHolder {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: #d8d8e6;
-  font-size: 0.86rem;
-  font-weight: 600;
-  user-select: none;
-
-  input {
-    width: 2.35rem;
-    height: 1.2rem;
-    appearance: none;
-    border-radius: 999px;
-    border: 1px solid #4d4d67;
-    background: #2a2a36;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 160ms ease;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 1px;
-      left: 1px;
-      width: calc(1.2rem - 4px);
-      height: calc(1.2rem - 4px);
-      border-radius: 999px;
-      background: #f1f1fa;
-      transition: transform 160ms ease;
-    }
-
-    &:checked {
-      background: #5a7f45;
-      border-color: #6e9860;
-    }
-
-    &:checked::before {
-      transform: translateX(1.15rem);
-    }
-  }
-}
-
 @media (max-width: 640px) {
   .topRow {
     flex-direction: column;
