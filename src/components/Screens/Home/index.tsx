@@ -125,7 +125,6 @@ function Home() {
         <div className={styles.gridCategorias}>
           {categoriasFiltradas.map((categoria) => {
             const fotosAtivas = categoria.fotos.filter((foto) => !LixeiraStorage.has(foto.src));
-            const previewFotos = fotosAtivas.slice(0, 5);
 
             return (
               <article
@@ -156,19 +155,6 @@ function Home() {
                   <p>
                     {fotosAtivas.length} {fotosAtivas.length === 1 ? "foto" : "fotos"}
                   </p>
-
-                  <div className={styles.preview}>
-                    {previewFotos.map((foto, index) => (
-                      <img
-                        key={`${categoria.id}_${foto.src}`}
-                        src={foto.src}
-                        alt={`Preview ${index + 1} da categoria ${categoria.nome}`}
-                        className={styles.previewThumb}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ))}
-                  </div>
                 </NavLink>
 
                 <div className={styles.cardActions}>
@@ -244,8 +230,8 @@ function Home() {
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h4>Excluir categoria</h4>
             <p>
-              Deseja realmente excluir <strong>{categoriaExcluindo.nome}</strong>? Esta ação remove a
-              categoria das fotos vinculadas.
+              Deseja realmente excluir <strong>{categoriaExcluindo.nome}</strong>? Esta ação remove
+              a categoria das fotos vinculadas.
             </p>
 
             <div className={styles.modalActions}>
