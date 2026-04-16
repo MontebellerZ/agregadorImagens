@@ -41,7 +41,12 @@ function getImageExtension(src: string) {
 
 function Categorias() {
   const allFotos = useContext(FotosContext);
-  const { apenasSemCategoria, setApenasSemCategoria } = useContext(CategoriasViewContext);
+  const {
+    apenasSemCategoria,
+    setApenasSemCategoria,
+    apenasComMultiplasCategorias,
+    setApenasComMultiplasCategorias,
+  } = useContext(CategoriasViewContext);
 
   const routeCategoria: TCategoria | undefined = useLoaderData();
   const [validadoUI, setValidadoUI] = useState<{ categoriaId: string | null; value: boolean }>(() => ({
@@ -56,18 +61,43 @@ function Categorias() {
       ? validadoUI.value
       : (routeCategoria?.validado ?? false);
 
-  const fotosSemCategoria = useMemo(() => {
+  const { fotosSemCategoria, fotosComMultiplasCategorias } = useMemo(() => {
     const categorias = CategoriaStorage.get() || [];
-    const fotosComCategoria = new Set(
-      categorias.flatMap((categoria) => categoria.fotos.map((foto) => foto.src)),
-    );
+    const categoriaCountByFoto = new Map<string, number>();
 
-    return allFotos.filter((foto) => !fotosComCategoria.has(foto.src));
+    categorias.forEach((categoria) => {
+      categoria.fotos.forEach((foto) => {
+        categoriaCountByFoto.set(foto.src, (categoriaCountByFoto.get(foto.src) ?? 0) + 1);
+      });
+    });
+
+    const semCategoria = allFotos.filter((foto) => !categoriaCountByFoto.has(foto.src));
+    const multiplasCategorias = allFotos.filter((foto) => (categoriaCountByFoto.get(foto.src) ?? 0) >= 2);
+
+    return {
+      fotosSemCategoria: semCategoria,
+      fotosComMultiplasCategorias: multiplasCategorias,
+    };
   }, [allFotos]);
 
   const mostrarSomenteSemCategoria = isVerTudo && apenasSemCategoria;
-  const nome = routeCategoria?.nome || (mostrarSomenteSemCategoria ? "Fotos sem categoria" : "Todas as fotos");
-  const fotos = routeCategoria?.fotos || (mostrarSomenteSemCategoria ? fotosSemCategoria : allFotos);
+  const mostrarSomenteMultiplasCategorias = isVerTudo && apenasComMultiplasCategorias;
+
+  const nome =
+    routeCategoria?.nome ||
+    (mostrarSomenteSemCategoria
+      ? "Fotos sem categoria"
+      : mostrarSomenteMultiplasCategorias
+        ? "Fotos com 2+ categorias"
+        : "Todas as fotos");
+
+  const fotos =
+    routeCategoria?.fotos ||
+    (mostrarSomenteSemCategoria
+      ? fotosSemCategoria
+      : mostrarSomenteMultiplasCategorias
+        ? fotosComMultiplasCategorias
+        : allFotos);
   const fotosAtivas = useMemo(() => fotos.filter((foto) => !LixeiraStorage.has(foto.src)), [fotos]);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -183,14 +213,25 @@ function Categorias() {
           )}
 
           {isVerTudo && (
-            <label className={styles.validadoHolder}>
-              <span>Apenas sem categoria</span>
-              <input
-                type="checkbox"
-                checked={mostrarSomenteSemCategoria}
-                onChange={(e) => setApenasSemCategoria(e.target.checked)}
-              />
-            </label>
+            <>
+              <label className={styles.validadoHolder}>
+                <span>Apenas sem categoria</span>
+                <input
+                  type="checkbox"
+                  checked={mostrarSomenteSemCategoria}
+                  onChange={(e) => setApenasSemCategoria(e.target.checked)}
+                />
+              </label>
+
+              <label className={styles.validadoHolder}>
+                <span>Apenas com 2+ categorias</span>
+                <input
+                  type="checkbox"
+                  checked={mostrarSomenteMultiplasCategorias}
+                  onChange={(e) => setApenasComMultiplasCategorias(e.target.checked)}
+                />
+              </label>
+            </>
           )}
 
           <button
